@@ -1,7 +1,12 @@
 const { default: mongoose } = require('mongoose');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
+const ConflictingRequestError = require('../errors/conflicting-request-err');
+const UnauthorizedError = require('../errors/unauthorized-err');
+const { MONGO_CODE, NODE_ENV, JWT_SECRET } = require('../constants');
 
 // возвращать пользователя
 const getMe = (req, res, next) => {
@@ -90,7 +95,20 @@ const login = (req, res, next) => {
       next(err);
     });
 };
+
+// выход пользователя
+const logout = (req, res) => {
+  res.cookie('jwt', null, {
+    maxAge: 0,
+    httpOnly: true,
+  });
+  res.send({ message: 'Выход' });
+};
+
 module.exports = {
   getMe,
   updateProfile,
+  createUser,
+  login,
+  logout,
 };
