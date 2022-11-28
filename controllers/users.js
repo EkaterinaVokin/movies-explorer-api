@@ -36,6 +36,30 @@ const updateProfile = (req, res, next) => {
     });
 };
 
+// регистрация пользователя(создается пользователь)
+const createUser = (req, res, next) => {
+  const {
+    name, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, email, password: hash,
+    }))
+    .then((user) => {
+      res.status(201).send({
+        _id: user._id, email: user.email, name: user.name,
+      });
+    })
+    .catch((err) => {
+      if (err.code === MONGO_CODE) {
+        next(new ConflictingRequestError('Имя пользователя уже зарегистрировано, измените имя пользователя'));
+      } else if (err instanceof mongoose.Error.ValidationError) {
+        next(new BadRequestError('Запрос был неправильно сформирован'));
+      } else {
+        next(err);
+      }
+    });
+};
 module.exports = {
   getMe,
   updateProfile,
