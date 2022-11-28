@@ -60,6 +60,36 @@ const createUser = (req, res, next) => {
       }
     });
 };
+
+// авторизация пользователя
+const login = (req, res, next) => {
+  const { email, password } = req.body; // получили данные
+  User.findOne({ email }).select('+password') // получить хеш пароль
+    .then((user) => {
+      if (!user) {
+        throw new UnauthorizedError('Неправильные почта или пароль'); // пользователь не найден
+      }
+      return user; // возвращаем пользователя
+    })
+    .then((user) => bcrypt.compare(password, user.password)
+      .then((matched) => {
+        if (!matched) { // если пароли не совпали
+          throw new UnauthorizedError('Неправильные почта или пароль');
+        }
+        const token = jwt.sign({ _id: user._id }, `${NODE_ENV === 'production' ? JWT_SECRET : 'yandex-praktikum'}`, { expiresIn: '7d' }); // создаем токен если совпали емаил и пароль
+        return token; // возвращаем токен
+      }))
+    .then((token) => {
+      res.cookie('jwt', token, { // сохраняем токен в куках
+        maxAge: 3600000,
+        httpOnly: true,
+      });
+      res.send({ message: 'Успешный логин' });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 module.exports = {
   getMe,
   updateProfile,
