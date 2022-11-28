@@ -7,7 +7,7 @@ const ForbiddenError = require('../errors/forbidden-err');
 // возвращает все сохраненные фильмы
 const getFilms = (req, res, next) => {
   const owner = req.user._id; // _id пользователя
-  Film.findOne({ owner })
+  Film.find({ owner })
     .then((films) => {
       res.send(films);
     })
@@ -51,6 +51,7 @@ const createFilm = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
+        console.log(err);
         next(new BadRequestError('Переданы некорректные данные при создании фильма'));
       } else {
         next(err);
@@ -60,7 +61,7 @@ const createFilm = (req, res, next) => {
 
 // удаляет сохранённый фильм по id
 const deleteFilm = (req, res, next) => {
-  Film.findById(req.params.Id)
+  Film.findById(req.params.id)
     .orFail()
     .then((film) => {
       if (film.owner.toString() !== req.user._id) {
