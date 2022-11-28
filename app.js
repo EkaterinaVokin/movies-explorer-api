@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet'); // модуль для защиты приложения известных веб-уязвимостей
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
+const limiter = require('./middlewares/limiter');
 const { PORT } = require('./constants');
 const NotFoundError = require('./errors/not-found-err');
 const routes = require('./routes/index');
@@ -16,6 +17,8 @@ const app = express();
 app.use(express.json());
 
 app.use(helmet()); // безопасность
+
+app.use(limiter); // защита от множества автоматических запросов
 
 app.use(cookieParser()); // подключаем парсер кук как мидлвэр
 
