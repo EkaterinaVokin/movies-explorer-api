@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const { getMe, updateProfile } = require('../controllers/users');
+const { getMe, updateProfile, logout } = require('../controllers/users');
 
 router.get('/users/me', getMe); // возвращает информацию о пользователе
 router.patch('/users/me', celebrate({
@@ -9,5 +9,8 @@ router.patch('/users/me', celebrate({
     email: Joi.string().required().email(),
   }),
 }), updateProfile); // обновляет информацию о пользователе
+
+// выход
+router.delete('/signout', logout);
 
 module.exports = router;
