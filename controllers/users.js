@@ -6,7 +6,9 @@ const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
 const ConflictingRequestError = require('../errors/conflicting-request-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
-const { MONGO_CODE, NODE_ENV, JWT_SECRET } = require('../constants');
+const {
+  MONGO_CODE, NODE_ENV, JWT_SECRET, ONE_WEEK,
+} = require('../constants');
 
 // возвращать пользователя
 const getMe = (req, res, next) => {
@@ -86,7 +88,7 @@ const login = (req, res, next) => {
       }))
     .then((token) => {
       res.cookie('jwt', token, { // сохраняем токен в куках
-        maxAge: 3600000,
+        maxAge: ONE_WEEK,
         httpOnly: true,
       });
       res.send({ message: 'Успешный логин' });
