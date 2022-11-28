@@ -61,7 +61,7 @@ const createFilm = (req, res, next) => {
 
 // удаляет сохранённый фильм по id
 const deleteFilm = (req, res, next) => {
-  Film.findById(req.params.id)
+  Film.findById(req.params.movieId)
     .orFail()
     .then((film) => {
       if (film.owner.toString() !== req.user._id) {

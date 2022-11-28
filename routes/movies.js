@@ -19,9 +19,9 @@ router.post('/movies', celebrate({
     nameEN: Joi.string().required().pattern(REGEX_EN),
   }),
 }), createFilm); // создаёт фильм с переданными в теле
-router.delete('/movies/:id', celebrate({
+router.delete('/movies/:movieId', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().length(24).hex().required(),
+    movieId: Joi.string().length(24).hex().required(),
   }),
 }), deleteFilm); // удаляет сохранённый фильм по id
 
