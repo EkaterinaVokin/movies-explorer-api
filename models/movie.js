@@ -15,7 +15,6 @@ const filmSchema = new mongoose.Schema(
     duration: {
       type: Number,
       required: true,
-      validate: (value) => validator.isNumeric(value),
     },
     year: {
       type: String,
