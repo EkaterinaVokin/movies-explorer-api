@@ -3,6 +3,13 @@ const Film = require('../models/movie');
 const BadRequestError = require('../errors/bad-request-err');
 const NotFoundError = require('../errors/not-found-err');
 const ForbiddenError = require('../errors/forbidden-err');
+const {
+  INCORRECT_DATA_MOVIE,
+  POST_DELETED,
+  DELETE_ALIEN,
+  ID_NOT_FOUND,
+  DELETE_INVALID_ID,
+} = require('../utils/constants');
 
 // возвращает все сохраненные фильмы
 const getFilms = (req, res, next) => {
@@ -51,7 +58,7 @@ const createFilm = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные при создании фильма'));
+        next(new BadRequestError(INCORRECT_DATA_MOVIE));
       } else {
         next(err);
       }
@@ -64,18 +71,18 @@ const deleteFilm = (req, res, next) => {
     .orFail()
     .then((film) => {
       if (film.owner.toString() !== req.user._id) {
-        throw new ForbiddenError('Удаление фильма другого пользователя');
+        throw new ForbiddenError(DELETE_ALIEN);
       }
       return film.remove();
     })
     .then(() => {
-      res.send({ message: 'Пост удален' });
+      res.send({ message: POST_DELETED });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next(new NotFoundError('Фильм с указанным _id не найден.'));
+        next(new NotFoundError(ID_NOT_FOUND));
       } else if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestError('Удаление фильма с некорректным id'));
+        next(new BadRequestError(DELETE_INVALID_ID));
       } else {
         next(err);
       }

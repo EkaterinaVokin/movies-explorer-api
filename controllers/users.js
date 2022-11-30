@@ -7,6 +7,15 @@ const BadRequestError = require('../errors/bad-request-err');
 const ConflictingRequestError = require('../errors/conflicting-request-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
 const { JWT_KEY, MONGO_CODE, ONE_WEEK } = require('../utils/config');
+const {
+  NON_EXISTENT_ID,
+  INCORRECT_DATA_PROFILE,
+  NAME_REGISTERED,
+  REQUEST_IS_MALFORMED,
+  WRONG_EMAIL_OR_PASSWORD,
+  SUCCESSFUL_LOGIN,
+  EXIT,
+} = require('../utils/constants');
 
 // возвращать пользователя
 const getMe = (req, res, next) => {
@@ -16,7 +25,7 @@ const getMe = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next(new NotFoundError('Пользователя с запрошенным _id не существует'));
+        next(new NotFoundError(NON_EXISTENT_ID));
       } else {
         next(err);
       }
@@ -32,11 +41,11 @@ const updateProfile = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
+        next(new BadRequestError(INCORRECT_DATA_PROFILE));
       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next(new NotFoundError('Пользователя с запрошенным _id не существует'));
+        next(new NotFoundError(NON_EXISTENT_ID));
       } else if (err.code === MONGO_CODE) {
-        next(new ConflictingRequestError('Имя пользователя уже зарегистрировано, измените имя пользователя'));
+        next(new ConflictingRequestError(NAME_REGISTERED));
       } else {
         next(err);
       }
@@ -59,9 +68,9 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === MONGO_CODE) {
-        next(new ConflictingRequestError('Имя пользователя уже зарегистрировано, измените имя пользователя'));
+        next(new ConflictingRequestError(NAME_REGISTERED));
       } else if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Запрос был неправильно сформирован'));
+        next(new BadRequestError(REQUEST_IS_MALFORMED));
       } else {
         next(err);
       }
@@ -74,14 +83,14 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password') // получить хеш пароль
     .then((user) => {
       if (!user) {
-        throw new UnauthorizedError('Неправильные почта или пароль'); // пользователь не найден
+        throw new UnauthorizedError(WRONG_EMAIL_OR_PASSWORD); // пользователь не найден
       }
       return user; // возвращаем пользователя
     })
     .then((user) => bcrypt.compare(password, user.password)
       .then((matched) => {
         if (!matched) { // если пароли не совпали
-          throw new UnauthorizedError('Неправильные почта или пароль');
+          throw new UnauthorizedError(WRONG_EMAIL_OR_PASSWORD);
         }
         const token = jwt.sign({ _id: user._id }, JWT_KEY, { expiresIn: '7d' }); // создаем токен если совпали емаил и пароль
         return token; // возвращаем токен
@@ -91,7 +100,7 @@ const login = (req, res, next) => {
         maxAge: ONE_WEEK,
         httpOnly: true,
       });
-      res.send({ message: 'Успешный логин' });
+      res.send({ message: SUCCESSFUL_LOGIN });
     })
     .catch((err) => {
       next(err);
@@ -101,7 +110,7 @@ const login = (req, res, next) => {
 // выход пользователя
 const logout = (req, res) => {
   res.clearCookie('jwt');
-  res.send({ message: 'Выход' });
+  res.send({ message: EXIT });
 };
 
 module.exports = {
