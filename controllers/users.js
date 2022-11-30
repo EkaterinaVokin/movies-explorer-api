@@ -37,6 +37,8 @@ const updateProfile = (req, res, next) => {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
         next(new NotFoundError('Пользователя с запрошенным _id не существует'));
+      } else if (err.code === MONGO_CODE) {
+        next(new ConflictingRequestError('Имя пользователя уже зарегистрировано, измените имя пользователя'));
       } else {
         next(err);
       }
