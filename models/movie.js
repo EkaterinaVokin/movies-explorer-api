@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const { REGEX_RU, REGEX_EN } = require('../constants');
 
 const filmSchema = new mongoose.Schema(
   {
@@ -45,19 +44,17 @@ const filmSchema = new mongoose.Schema(
       required: true,
     },
     movieId: {
-      type: String,
+      type: Number,
       required: true,
       // id фильма, который содержится в ответе сервиса MoviesExplorer.
     },
     nameRU: {
       type: String,
       required: true,
-      validate: (value) => REGEX_RU.test(value),
     },
     nameEN: {
       type: String,
       required: true,
-      validate: (value) => REGEX_EN.test(value),
     },
   },
   { versionKey: false },
