@@ -1,22 +1,23 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+const { validationLogin, validationCreateUser } = require('../middlewares/validations');
 const { login, createUser } = require('../controllers/users');
+const usersRouter = require('./users');
+const moviesRouter = require('./movies');
+const auth = require('../middlewares/auth');
+const NotFoundError = require('../errors/not-found-err');
 
 // авторизация
-router.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
+router.post('/signin', validationLogin, login);
 
 // регистрация
-router.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-    name: Joi.string().min(2).max(30),
-  }),
-}), createUser);
+router.post('/signup', validationCreateUser, createUser);
+
+router.use('/', auth, usersRouter);
+router.use('/', auth, moviesRouter);
+
+// обработка несуществующих маршрутов
+router.use('*', auth, (req, res, next) => {
+  next(new NotFoundError(`Запрашиваемый ресурс ${req.baseUrl} не найден`));
+});
 
 module.exports = router;

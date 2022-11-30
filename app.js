@@ -31,13 +31,7 @@ app.use(requestLogger); // подключаем логгер запросов
 // регистрация и авторизация
 app.use(routes);
 
-app.use('/', auth, require('./routes/users'));
-app.use('/', auth, require('./routes/movies'));
-
-// обработка несуществующих маршрутов
-app.use('*', auth, (req, res, next) => {
-  next(new NotFoundError(`Запрашиваемый ресурс ${req.baseUrl} не найден`));
-});
+app.use(routes); // регистрация всех маршрутов
 
 app.use(errorLogger); // подключаем логгер ошибок
 
