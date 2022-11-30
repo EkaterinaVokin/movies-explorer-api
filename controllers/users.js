@@ -6,9 +6,7 @@ const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
 const ConflictingRequestError = require('../errors/conflicting-request-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
-const {
-  MONGO_CODE, NODE_ENV, JWT_SECRET, ONE_WEEK,
-} = require('../constants');
+const { JWT_KEY, MONGO_CODE, ONE_WEEK } = require('../utils/config');
 
 // возвращать пользователя
 const getMe = (req, res, next) => {
@@ -85,7 +83,7 @@ const login = (req, res, next) => {
         if (!matched) { // если пароли не совпали
           throw new UnauthorizedError('Неправильные почта или пароль');
         }
-        const token = jwt.sign({ _id: user._id }, `${NODE_ENV === 'production' ? JWT_SECRET : 'yandex-praktikum'}`, { expiresIn: '7d' }); // создаем токен если совпали емаил и пароль
+        const token = jwt.sign({ _id: user._id }, JWT_KEY, { expiresIn: '7d' }); // создаем токен если совпали емаил и пароль
         return token; // возвращаем токен
       }))
     .then((token) => {

@@ -1,13 +1,13 @@
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET, NODE_ENV } = require('../constants');
 const UnauthorizedError = require('../errors/unauthorized-err');
+const { JWT_KEY } = require('../utils/config');
 
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt; // извлечём токен с кук
   let payload;
 
   try {
-    payload = jwt.verify(token, `${NODE_ENV === 'production' ? JWT_SECRET : 'yandex-praktikum'}`); // верифицируем токен пользователя
+    payload = jwt.verify(token, JWT_KEY); // верифицируем токен пользователя
   } catch {
     next(new UnauthorizedError('Необходима авторизация, прислан не тот токен'));
     return;
