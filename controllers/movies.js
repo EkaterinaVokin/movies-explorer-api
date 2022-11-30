@@ -51,7 +51,6 @@ const createFilm = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        console.log(err);
         next(new BadRequestError('Переданы некорректные данные при создании фильма'));
       } else {
         next(err);
