@@ -100,10 +100,7 @@ const login = (req, res, next) => {
 
 // выход пользователя
 const logout = (req, res) => {
-  res.cookie('jwt', null, {
-    maxAge: 0,
-    httpOnly: true,
-  });
+  res.clearCookie('jwt');
   res.send({ message: 'Выход' });
 };
 
