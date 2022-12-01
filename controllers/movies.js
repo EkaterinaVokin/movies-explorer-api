@@ -25,34 +25,7 @@ const getFilms = (req, res, next) => {
 
 // создаёт фильм
 const createFilm = (req, res, next) => {
-  const owner = req.user._id; // _id пользователя
-  const {
-    country,
-    director,
-    duration,
-    year,
-    description,
-    image,
-    trailerLink,
-    thumbnail,
-    movieId,
-    nameRU,
-    nameEN,
-  } = req.body;
-  Film.create({
-    country,
-    director,
-    duration,
-    year,
-    description,
-    image,
-    trailerLink,
-    thumbnail,
-    movieId,
-    nameRU,
-    nameEN,
-    owner,
-  })
+  Film.create({ ...req.body, owner: req.user._id })
     .then((film) => {
       res.status(201).send(film);
     })
