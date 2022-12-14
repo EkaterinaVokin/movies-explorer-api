@@ -1,6 +1,6 @@
 const NON_EXISTENT_ID = 'Пользователя с запрошенным _id не существует';
 const INCORRECT_DATA_PROFILE = 'Переданы некорректные данные при обновлении профиля';
-const NAME_REGISTERED = 'Имя пользователя уже зарегистрировано, измените имя пользователя';
+const NAME_REGISTERED = 'Пользователь с таким email уже существует';
 const REQUEST_IS_MALFORMED = 'Запрос был неправильно сформирован';
 const WRONG_EMAIL_OR_PASSWORD = 'Неправильные почта или пароль';
 const SUCCESSFUL_LOGIN = 'Успешный логин';
