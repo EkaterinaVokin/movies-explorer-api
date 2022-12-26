@@ -6,6 +6,6 @@ router.get('/users/me', getMe); // возвращает информацию о 
 router.patch('/users/me', validationUpdateProfile, updateProfile); // обновляет информацию о пользователе
 
 // выход
-router.delete('/signout', logout);
+router.post('/signout', logout);
 
 module.exports = router;

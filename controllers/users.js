@@ -37,7 +37,7 @@ const updateProfile = (req, res, next) => {
   const { name, email } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true }).orFail()
     .then((newUser) => {
-      res.send(newUser);
+      res.send({ newUser, message: 'Профиль успешно отредактирован' });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
